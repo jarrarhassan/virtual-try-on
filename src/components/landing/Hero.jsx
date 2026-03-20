@@ -21,6 +21,24 @@ const Hero = ({ onTryNow }) => {
       {/* Dark Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
 
+      {/* Top Navigation */}
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-8 py-6"
+      >
+        <h2 className="font-serif text-xl text-white">Beauty Try-On</h2>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onTryNow}
+          className="px-8 py-3 bg-gold text-charcoal font-medium text-sm tracking-widest uppercase transition-all duration-300 hover:bg-gold-light"
+        >
+          Try Now
+        </motion.button>
+      </motion.nav>
+
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
         <motion.span
