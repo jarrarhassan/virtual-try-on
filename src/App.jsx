@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { LandingPage } from './components/landing';
 import Camera from './components/Camera';
 import ProductCatalog from './components/ProductCatalog';
 import SkinAnalysis from './components/SkinAnalysis';
@@ -6,9 +8,9 @@ import Favorites from './components/Favorites';
 import Tutorial from './components/Tutorial';
 import Toolbar from './components/Toolbar';
 import useStore from './store/useStore';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { FiMenu, FiX, FiArrowLeft } from 'react-icons/fi';
 
-function App() {
+function TryOnApp({ onBack }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activePanel, setActivePanel] = useState('collection');
   const [isMobile, setIsMobile] = useState(false);
@@ -51,6 +53,14 @@ function App() {
       <header className="fixed top-0 left-0 right-0 z-40 bg-cream/90 backdrop-blur-lg border-b border-neutral-200/50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
+            {/* Back button */}
+            <button
+              onClick={onBack}
+              className="p-2 hover:bg-neutral-100 rounded-full transition-luxury"
+            >
+              <FiArrowLeft className="w-5 h-5 text-charcoal" />
+            </button>
+
             {/* Mobile menu toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -238,6 +248,36 @@ function App() {
         </nav>
       )}
     </div>
+  );
+}
+
+function App() {
+  const [view, setView] = useState('landing'); // 'landing' or 'app'
+
+  return (
+    <AnimatePresence mode="wait">
+      {view === 'landing' ? (
+        <motion.div
+          key="landing"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <LandingPage onEnterApp={() => setView('app')} />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="app"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <TryOnApp onBack={() => setView('landing')} />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

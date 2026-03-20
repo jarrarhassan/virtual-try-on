@@ -16,6 +16,7 @@
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
     "@tensorflow/tfjs": "^4.22.0",
+    "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
     "react": "^19.2.0",
     "react-compare-slider": "^3.1.0",
