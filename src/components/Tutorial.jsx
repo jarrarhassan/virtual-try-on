@@ -4,34 +4,24 @@ import { FiChevronRight, FiX } from 'react-icons/fi';
 
 const steps = [
   {
-    title: 'Welcome to Beauty Try-On',
-    description: 'Experience virtual makeup powered by AI. Try on lipsticks, eyeshadow, foundation and more in real-time!',
-    icon: '✨',
+    title: 'Welcome',
+    description: 'Experience virtual makeup powered by AI. Try on lipsticks, eyeshadow, foundation and more in real-time.',
   },
   {
     title: 'Position Your Face',
-    description: 'Make sure your face is well-lit and centered in the camera. Our AI will automatically detect your facial features.',
-    icon: '📷',
+    description: 'Ensure your face is well-lit and centered in the camera. Our AI will detect your facial features automatically.',
   },
   {
-    title: 'Choose Products',
-    description: 'Browse our catalog of 50+ products. Tap any product to see shade options, then tap a shade to try it on instantly.',
-    icon: '💄',
+    title: 'Browse Collection',
+    description: 'Explore our curated catalog of products. Select any item to see shade options, then tap a shade to try it instantly.',
   },
   {
-    title: 'Adjust & Perfect',
-    description: 'Use the intensity slider to adjust how bold your makeup looks. Mix and match products to create your perfect look!',
-    icon: '🎨',
-  },
-  {
-    title: 'Analyze Your Skin',
-    description: 'Use our Skin Genius feature to get personalized product recommendations based on your skin type and tone.',
-    icon: '🔬',
+    title: 'Perfect Your Look',
+    description: 'Use the intensity slider to adjust the boldness of your makeup. Mix and match products to create your signature look.',
   },
   {
     title: 'Save & Share',
-    description: 'Love your look? Save it to favorites, capture a photo, or share directly to social media!',
-    icon: '💖',
+    description: 'Save your favorite looks, capture photos, or share directly with friends.',
   },
 ];
 
@@ -59,40 +49,44 @@ const Tutorial = () => {
   return (
     <div className="modal-overlay" onClick={handleSkip}>
       <div
-        className="modal-content p-6"
+        className="modal-content p-8 max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={handleSkip}
-          className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="absolute top-5 right-5 p-2 hover:bg-neutral-100 rounded-full transition-luxury"
         >
-          <FiX className="w-5 h-5 text-gray-500" />
+          <FiX className="w-4 h-4 text-muted" />
         </button>
 
         {/* Step content */}
         <div className="text-center pt-4">
-          <div className="text-6xl mb-4">{step.icon}</div>
-          <h3 className="text-2xl font-display font-semibold text-gray-800 mb-3">
+          {/* Step indicator */}
+          <p className="text-xs text-gold font-medium tracking-widest uppercase mb-6">
+            Step {currentStep + 1} of {steps.length}
+          </p>
+
+          <h3 className="text-2xl font-serif font-medium text-charcoal mb-4">
             {step.title}
           </h3>
-          <p className="text-gray-600 mb-8 max-w-sm mx-auto">
+          <p className="text-muted leading-relaxed mb-10 max-w-sm mx-auto">
             {step.description}
           </p>
         </div>
 
         {/* Progress dots */}
-        <div className="flex justify-center gap-2 mb-6">
+        <div className="flex justify-center gap-2 mb-8">
           {steps.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentStep(i)}
-              className={`w-2 h-2 rounded-full transition-all ${
+              className={`h-1.5 rounded-full transition-all duration-300 ${
                 i === currentStep
-                  ? 'w-6 bg-pink-500'
+                  ? 'w-8 bg-gold'
                   : i < currentStep
-                  ? 'bg-pink-300'
-                  : 'bg-gray-200'
+                  ? 'w-1.5 bg-gold/40'
+                  : 'w-1.5 bg-neutral-200'
               }`}
             />
           ))}
@@ -102,16 +96,16 @@ const Tutorial = () => {
         <div className="flex gap-3">
           <button
             onClick={handleSkip}
-            className="flex-1 py-3 text-gray-500 font-medium hover:text-gray-700 transition-colors"
+            className="flex-1 py-3 text-muted font-medium text-sm hover:text-charcoal transition-colors"
           >
             Skip
           </button>
           <button
             onClick={handleNext}
-            className="flex-1 btn-primary flex items-center justify-center gap-2"
+            className="flex-1 btn-luxury btn-primary"
           >
-            {isLastStep ? 'Get Started' : 'Next'}
-            {!isLastStep && <FiChevronRight className="w-5 h-5" />}
+            {isLastStep ? 'Get Started' : 'Continue'}
+            {!isLastStep && <FiChevronRight className="w-4 h-4" />}
           </button>
         </div>
       </div>

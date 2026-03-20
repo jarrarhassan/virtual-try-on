@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react';
 import Camera from './components/Camera';
 import ProductCatalog from './components/ProductCatalog';
 import SkinAnalysis from './components/SkinAnalysis';
-import Toolbar from './components/Toolbar';
 import Favorites from './components/Favorites';
 import Tutorial from './components/Tutorial';
+import Toolbar from './components/Toolbar';
 import useStore from './store/useStore';
-import { FiMenu, FiX, FiHeart, FiGrid, FiZap } from 'react-icons/fi';
+import { FiMenu, FiX } from 'react-icons/fi';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activePanel, setActivePanel] = useState('products'); // 'products', 'analysis', 'favorites'
+  const [activePanel, setActivePanel] = useState('collection');
   const [isMobile, setIsMobile] = useState(false);
 
   const { selectedProducts, isFaceDetected } = useStore();
@@ -38,67 +38,65 @@ function App() {
   };
 
   const handleShowFavorites = () => {
-    setActivePanel('favorites');
+    setActivePanel('saved');
     if (isMobile) setSidebarOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50">
+    <div className="min-h-screen bg-cream">
       {/* Tutorial overlay */}
       <Tutorial />
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-lg border-b border-pink-100">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="fixed top-0 left-0 right-0 z-40 bg-cream/90 backdrop-blur-lg border-b border-neutral-200/50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
             {/* Mobile menu toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden p-2 hover:bg-pink-100 rounded-lg transition-colors"
+              className="md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-luxury"
             >
               {sidebarOpen ? (
-                <FiX className="w-6 h-6 text-gray-700" />
+                <FiX className="w-5 h-5 text-charcoal" />
               ) : (
-                <FiMenu className="w-6 h-6 text-gray-700" />
+                <FiMenu className="w-5 h-5 text-charcoal" />
               )}
             </button>
 
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">💄</span>
-              <h1 className="text-xl font-display font-bold text-gradient">
-                Beauty Try-On
-              </h1>
-            </div>
+            <h1 className="text-2xl font-serif font-medium text-charcoal tracking-tight">
+              Beauty Try-On
+            </h1>
           </div>
 
           {/* Status badges */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {appliedCount > 0 && (
-              <span className="px-3 py-1 bg-pink-100 text-pink-700 text-sm font-medium rounded-full">
+              <span className="status-badge bg-gold/10 text-gold-dark">
                 {appliedCount} applied
               </span>
             )}
-            <span className={`px-3 py-1 text-sm font-medium rounded-full ${
-              isFaceDetected
-                ? 'bg-green-100 text-green-700'
-                : 'bg-yellow-100 text-yellow-700'
+            <span className={`status-badge ${
+              isFaceDetected ? 'status-ready' : 'status-waiting'
             }`}>
-              {isFaceDetected ? '✓ Ready' : '○ No face'}
+              <span className={`w-1.5 h-1.5 rounded-full ${
+                isFaceDetected ? 'bg-gold' : 'bg-muted animate-pulse'
+              }`} />
+              {isFaceDetected ? 'Ready' : 'Detecting'}
             </span>
           </div>
         </div>
       </header>
 
       {/* Main content */}
-      <main className="pt-16 min-h-screen flex">
+      <main className="pt-[73px] min-h-screen flex">
         {/* Camera section */}
-        <div className={`flex-1 p-4 transition-all duration-300 ${
-          sidebarOpen && !isMobile ? 'mr-[380px]' : ''
+        <div className={`flex-1 p-6 transition-all duration-300 ${
+          sidebarOpen && !isMobile ? 'mr-[400px]' : ''
         }`}>
           <div className="max-w-3xl mx-auto">
             {/* Video container */}
-            <div className="video-container mb-4">
+            <div className="video-container mb-6">
               <Camera />
             </div>
 
@@ -110,8 +108,10 @@ function App() {
 
             {/* Applied products summary */}
             {appliedCount > 0 && (
-              <div className="mt-4 p-4 bg-white/80 backdrop-blur rounded-2xl">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Applied Makeup</h3>
+              <div className="mt-6 p-5 bg-white rounded-2xl border border-neutral-100 animate-slide-up">
+                <h3 className="text-sm font-medium text-muted mb-3 tracking-wide uppercase">
+                  Current Look
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(selectedProducts)
                     .filter(([_, product]) => product !== null)
@@ -120,18 +120,20 @@ function App() {
                       return (
                         <div
                           key={key}
-                          className="flex items-center gap-2 px-3 py-1.5 bg-pink-50 rounded-full"
+                          className="flex items-center gap-2 px-4 py-2 bg-cream rounded-full transition-luxury hover:bg-neutral-100"
                         >
                           <div
-                            className="w-4 h-4 rounded-full border border-white shadow-sm"
+                            className="w-4 h-4 rounded-full shadow-soft"
                             style={{ backgroundColor: shade?.hex || '#f0f0f0' }}
                           />
-                          <span className="text-sm text-gray-700">{product.name}</span>
+                          <span className="text-sm text-charcoal font-medium">
+                            {product.name}
+                          </span>
                           <button
                             onClick={() => useStore.getState().clearProduct(key)}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="ml-1 text-muted hover:text-charcoal transition-colors"
                           >
-                            <FiX className="w-4 h-4" />
+                            <FiX className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       );
@@ -143,54 +145,51 @@ function App() {
         </div>
 
         {/* Sidebar */}
-        <aside className={`fixed top-16 right-0 bottom-0 w-[380px] border-l border-pink-100 bg-white/50 backdrop-blur-sm transform transition-transform duration-300 z-30 ${
+        <aside className={`fixed top-[73px] right-0 bottom-0 w-[400px] bg-white border-l border-neutral-100 transform transition-transform duration-300 z-30 ${
           sidebarOpen ? 'translate-x-0' : 'translate-x-full'
         }`}>
           {/* Panel tabs */}
-          <div className="flex border-b border-pink-100 bg-white">
+          <div className="flex border-b border-neutral-100">
             <button
-              onClick={() => setActivePanel('products')}
-              className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 font-medium transition-colors ${
-                activePanel === 'products'
-                  ? 'text-pink-600 border-b-2 border-pink-500 bg-pink-50'
-                  : 'text-gray-500 hover:text-gray-700'
+              onClick={() => setActivePanel('collection')}
+              className={`flex-1 py-4 px-4 text-sm font-medium tracking-wide transition-luxury ${
+                activePanel === 'collection'
+                  ? 'text-charcoal border-b-2 border-charcoal'
+                  : 'text-muted hover:text-charcoal'
               }`}
             >
-              <FiGrid className="w-4 h-4" />
-              Products
+              Collection
             </button>
             <button
               onClick={() => setActivePanel('analysis')}
-              className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 font-medium transition-colors ${
+              className={`flex-1 py-4 px-4 text-sm font-medium tracking-wide transition-luxury ${
                 activePanel === 'analysis'
-                  ? 'text-pink-600 border-b-2 border-pink-500 bg-pink-50'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-charcoal border-b-2 border-charcoal'
+                  : 'text-muted hover:text-charcoal'
               }`}
             >
-              <FiZap className="w-4 h-4" />
-              Skin Genius
+              Analysis
             </button>
             <button
-              onClick={() => setActivePanel('favorites')}
-              className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 font-medium transition-colors ${
-                activePanel === 'favorites'
-                  ? 'text-pink-600 border-b-2 border-pink-500 bg-pink-50'
-                  : 'text-gray-500 hover:text-gray-700'
+              onClick={() => setActivePanel('saved')}
+              className={`flex-1 py-4 px-4 text-sm font-medium tracking-wide transition-luxury ${
+                activePanel === 'saved'
+                  ? 'text-charcoal border-b-2 border-charcoal'
+                  : 'text-muted hover:text-charcoal'
               }`}
             >
-              <FiHeart className="w-4 h-4" />
               Saved
             </button>
           </div>
 
           {/* Panel content */}
-          <div className="h-[calc(100%-49px)] overflow-hidden">
-            {activePanel === 'products' && <ProductCatalog />}
+          <div className="h-[calc(100%-57px)] overflow-hidden">
+            {activePanel === 'collection' && <ProductCatalog />}
             {activePanel === 'analysis' && (
-              <SkinAnalysis onClose={() => setActivePanel('products')} />
+              <SkinAnalysis onClose={() => setActivePanel('collection')} />
             )}
-            {activePanel === 'favorites' && (
-              <Favorites onClose={() => setActivePanel('products')} />
+            {activePanel === 'saved' && (
+              <Favorites onClose={() => setActivePanel('collection')} />
             )}
           </div>
         </aside>
@@ -198,7 +197,7 @@ function App() {
         {/* Mobile overlay */}
         {isMobile && sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-20"
+            className="fixed inset-0 bg-charcoal/40 backdrop-blur-sm z-20"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -206,17 +205,16 @@ function App() {
 
       {/* Mobile bottom nav */}
       {isMobile && !sidebarOpen && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-pink-100 z-30">
-          <div className="flex justify-around py-2">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 z-30">
+          <div className="flex justify-around py-3">
             <button
               onClick={() => {
-                setActivePanel('products');
+                setActivePanel('collection');
                 setSidebarOpen(true);
               }}
               className="flex flex-col items-center py-2 px-4"
             >
-              <FiGrid className="w-6 h-6 text-pink-500" />
-              <span className="text-xs text-gray-600 mt-1">Products</span>
+              <span className="text-xs text-muted font-medium tracking-wide">Collection</span>
             </button>
             <button
               onClick={() => {
@@ -225,18 +223,16 @@ function App() {
               }}
               className="flex flex-col items-center py-2 px-4"
             >
-              <FiZap className="w-6 h-6 text-gray-500" />
-              <span className="text-xs text-gray-600 mt-1">Analyze</span>
+              <span className="text-xs text-muted font-medium tracking-wide">Analysis</span>
             </button>
             <button
               onClick={() => {
-                setActivePanel('favorites');
+                setActivePanel('saved');
                 setSidebarOpen(true);
               }}
               className="flex flex-col items-center py-2 px-4"
             >
-              <FiHeart className="w-6 h-6 text-gray-500" />
-              <span className="text-xs text-gray-600 mt-1">Saved</span>
+              <span className="text-xs text-muted font-medium tracking-wide">Saved</span>
             </button>
           </div>
         </nav>

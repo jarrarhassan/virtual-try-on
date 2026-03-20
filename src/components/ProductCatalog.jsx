@@ -1,7 +1,16 @@
 import { useState, useMemo } from 'react';
 import { products, categories } from '../data/products';
 import useStore from '../store/useStore';
-import { FiHeart, FiCheck, FiX } from 'react-icons/fi';
+import { FiCheck, FiX } from 'react-icons/fi';
+
+// Category mapping without emojis
+const categoryLabels = {
+  all: 'All',
+  lips: 'Lips',
+  face: 'Face',
+  eyes: 'Eyes',
+  brows: 'Brows',
+};
 
 const ProductCatalog = () => {
   const {
@@ -68,10 +77,12 @@ const ProductCatalog = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white/80 backdrop-blur-lg rounded-2xl overflow-hidden">
+    <div className="h-full flex flex-col bg-cream">
       {/* Header */}
-      <div className="p-4 border-b border-pink-100">
-        <h2 className="text-xl font-display font-semibold text-gray-800 mb-3">Products</h2>
+      <div className="p-5 border-b border-neutral-100 bg-white">
+        <h2 className="text-xl font-serif font-medium text-charcoal mb-4">
+          Collection
+        </h2>
 
         {/* Category tabs */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
@@ -79,19 +90,18 @@ const ProductCatalog = () => {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`category-tab whitespace-nowrap ${
+              className={`category-tab ${
                 activeCategory === cat.id ? 'active' : ''
               }`}
             >
-              <span className="mr-1">{cat.icon}</span>
-              {cat.name}
+              {categoryLabels[cat.id]}
             </button>
           ))}
         </div>
       </div>
 
       {/* Product list */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 overflow-y-auto scrollbar-luxury p-5 space-y-4">
         {filteredProducts.map((product) => {
           const isSelected = isProductSelected(product);
           const selectedShade = getSelectedShadeForProduct(product);
@@ -101,31 +111,37 @@ const ProductCatalog = () => {
           return (
             <div
               key={product.id}
-              className={`product-card transition-all duration-300 ${
-                isSelected ? 'ring-2 ring-pink-500 bg-pink-50' : ''
+              className={`product-card animate-fade-in ${
+                isSelected ? 'selected' : ''
               }`}
             >
               {/* Product header */}
               <div
-                className="flex items-start gap-3 cursor-pointer"
+                className="flex items-start gap-4 cursor-pointer"
                 onClick={() => setExpandedProduct(isExpanded ? null : product.id)}
               >
-                {/* Product image / color preview */}
+                {/* Large color swatch */}
                 <div
-                  className="w-14 h-14 rounded-xl flex-shrink-0 shadow-md"
+                  className="shade-swatch-lg flex-shrink-0 transition-transform duration-200 hover:scale-105"
                   style={{
                     backgroundColor: selectedShade?.hex || product.shades[0]?.hex || '#f0f0f0'
                   }}
                 />
 
                 {/* Product info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-pink-600 font-medium">{product.brand}</p>
-                  <h3 className="font-semibold text-gray-800 truncate">{product.name}</h3>
-                  <p className="text-xs text-gray-500 capitalize">{product.type} • {product.finish}</p>
+                <div className="flex-1 min-w-0 py-0.5">
+                  <p className="text-xs text-muted font-medium tracking-wide uppercase mb-1">
+                    {product.brand}
+                  </p>
+                  <h3 className="font-semibold text-charcoal text-base leading-tight truncate">
+                    {product.name}
+                  </h3>
+                  <p className="text-xs text-muted mt-1 capitalize">
+                    {product.type} · {product.finish}
+                  </p>
 
                   {selectedShade && (
-                    <p className="text-xs text-pink-600 mt-1 flex items-center gap-1">
+                    <p className="text-xs text-gold-dark mt-2 flex items-center gap-1.5 font-medium">
                       <FiCheck className="w-3 h-3" />
                       {selectedShade.name}
                     </p>
@@ -139,20 +155,22 @@ const ProductCatalog = () => {
                       e.stopPropagation();
                       handleClearProduct(product);
                     }}
-                    className="p-2 hover:bg-pink-100 rounded-full transition-colors"
+                    className="p-2 hover:bg-neutral-100 rounded-full transition-luxury"
                   >
-                    <FiX className="w-4 h-4 text-gray-500" />
+                    <FiX className="w-4 h-4 text-muted" />
                   </button>
                 )}
               </div>
 
               {/* Expanded shade selection */}
               {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-pink-100">
-                  <p className="text-sm font-medium text-gray-700 mb-3">Select shade:</p>
+                <div className="mt-5 pt-5 border-t border-neutral-100 animate-slide-up">
+                  <p className="text-sm font-medium text-charcoal mb-4">
+                    Select Shade
+                  </p>
 
                   {/* Shade swatches */}
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-3 mb-5">
                     {product.shades.map((shade) => (
                       <button
                         key={shade.id}
@@ -168,17 +186,17 @@ const ProductCatalog = () => {
 
                   {/* Shade name display */}
                   {selectedShade && (
-                    <p className="text-sm text-gray-600 mb-3">
-                      Selected: <span className="font-medium">{selectedShade.name}</span>
+                    <p className="text-sm text-muted mb-4">
+                      Selected: <span className="text-charcoal font-medium">{selectedShade.name}</span>
                     </p>
                   )}
 
                   {/* Intensity slider */}
                   {isSelected && (
-                    <div className="mt-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">Intensity</span>
-                        <span className="text-sm font-medium text-pink-600">
+                    <div className="mt-4">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-sm text-muted">Intensity</span>
+                        <span className="text-sm font-medium text-gold-dark">
                           {makeupIntensity[productKey]}%
                         </span>
                       </div>
@@ -200,10 +218,10 @@ const ProductCatalog = () => {
                         handleSelectShade(product, product.shades[0]);
                       }
                     }}
-                    className={`w-full mt-3 py-2.5 rounded-full font-medium transition-all ${
+                    className={`w-full mt-5 py-3 rounded-full font-medium text-sm tracking-wide transition-luxury ${
                       isSelected
-                        ? 'bg-gray-100 text-gray-500'
-                        : 'bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:shadow-lg'
+                        ? 'bg-neutral-100 text-muted cursor-default'
+                        : 'bg-charcoal text-cream hover:bg-neutral-800'
                     }`}
                     disabled={isSelected}
                   >
@@ -218,12 +236,12 @@ const ProductCatalog = () => {
 
       {/* Quick clear all */}
       {Object.values(selectedProducts).some(p => p !== null) && (
-        <div className="p-4 border-t border-pink-100">
+        <div className="p-5 border-t border-neutral-100 bg-white">
           <button
             onClick={() => useStore.getState().clearAllProducts()}
-            className="w-full py-2 text-pink-600 font-medium hover:bg-pink-50 rounded-full transition-colors"
+            className="w-full py-3 text-muted font-medium text-sm hover:text-charcoal hover:bg-neutral-50 rounded-full transition-luxury"
           >
-            Clear All Makeup
+            Clear All
           </button>
         </div>
       )}

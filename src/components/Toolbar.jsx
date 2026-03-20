@@ -1,17 +1,21 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import useStore from '../store/useStore';
 import html2canvas from 'html2canvas';
 import {
   FiCamera,
   FiHeart,
-  FiShare2,
   FiSliders,
+  FiMoreHorizontal,
   FiDownload,
+  FiShare2,
   FiRefreshCw,
-  FiMaximize2,
+  FiX,
 } from 'react-icons/fi';
 
 const Toolbar = ({ onShowFavorites, onShowAnalysis }) => {
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [saveConfirm, setSaveConfirm] = useState(false);
+
   const {
     isCompareMode,
     setCompareMode,
@@ -62,11 +66,12 @@ const Toolbar = ({ onShowFavorites, onShowAnalysis }) => {
     addFavorite({
       ...look,
       name: `Look ${Date.now()}`,
-      preview: null, // Could capture preview image
+      preview: null,
     });
 
     // Show feedback
-    alert('Look saved to favorites!');
+    setSaveConfirm(true);
+    setTimeout(() => setSaveConfirm(false), 2000);
   };
 
   // Share look
@@ -85,14 +90,13 @@ const Toolbar = ({ onShowFavorites, onShowAnalysis }) => {
           files: [new File([blob], 'beauty-look.png', { type: 'image/png' })],
         });
       } else {
-        // Fallback: copy to clipboard
-        const imageData = canvas.toDataURL('image/png');
-        await navigator.clipboard.writeText(imageData);
-        alert('Image copied to clipboard!');
+        // Fallback: download
+        handleCapture();
       }
     } catch (err) {
       console.error('Share failed:', err);
     }
+    setShowMoreMenu(false);
   };
 
   // Handle compare slider drag
@@ -101,83 +105,130 @@ const Toolbar = ({ onShowFavorites, onShowAnalysis }) => {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Main toolbar */}
-      <div className="flex items-center justify-center gap-2 p-3 bg-white/90 backdrop-blur-lg rounded-2xl shadow-lg">
+    <div className="flex flex-col gap-4">
+      {/* Main toolbar - 3 core actions */}
+      <div className="flex items-center justify-center gap-3 p-4 bg-white rounded-2xl shadow-soft border border-neutral-100">
         {/* Capture button */}
         <button
           onClick={handleCapture}
           className="btn-icon"
-          title="Capture photo"
+          title="Capture"
         >
-          <FiCamera className="w-5 h-5 text-gray-700" />
-        </button>
-
-        {/* Save to favorites */}
-        <button
-          onClick={handleSaveFavorite}
-          disabled={!hasMakeup}
-          className={`btn-icon ${!hasMakeup ? 'opacity-50 cursor-not-allowed' : ''}`}
-          title="Save to favorites"
-        >
-          <FiHeart className="w-5 h-5 text-pink-500" />
+          <FiCamera className="w-5 h-5" />
         </button>
 
         {/* Compare toggle */}
         <button
           onClick={() => setCompareMode(!isCompareMode)}
-          className={`btn-icon ${isCompareMode ? 'bg-pink-100 ring-2 ring-pink-500' : ''}`}
-          title="Before/After compare"
+          className={`btn-icon ${isCompareMode ? 'active' : ''}`}
+          title="Compare Before/After"
         >
-          <FiSliders className="w-5 h-5 text-gray-700" />
+          <FiSliders className="w-5 h-5" />
         </button>
 
-        {/* Share */}
-        <button
-          onClick={handleShare}
-          disabled={!hasMakeup}
-          className={`btn-icon ${!hasMakeup ? 'opacity-50 cursor-not-allowed' : ''}`}
-          title="Share look"
-        >
-          <FiShare2 className="w-5 h-5 text-gray-700" />
-        </button>
-
-        {/* Download */}
-        <button
-          onClick={handleCapture}
-          disabled={!hasMakeup}
-          className={`btn-icon ${!hasMakeup ? 'opacity-50 cursor-not-allowed' : ''}`}
-          title="Download image"
-        >
-          <FiDownload className="w-5 h-5 text-gray-700" />
-        </button>
-
-        {/* View favorites */}
-        <button
-          onClick={onShowFavorites}
-          className="btn-icon"
-          title="View favorites"
-        >
-          <FiMaximize2 className="w-5 h-5 text-gray-700" />
-        </button>
-
-        {/* Clear all */}
-        {hasMakeup && (
+        {/* Save to favorites */}
+        <div className="relative">
           <button
-            onClick={clearAllProducts}
-            className="btn-icon"
-            title="Clear all makeup"
+            onClick={handleSaveFavorite}
+            disabled={!hasMakeup}
+            className={`btn-icon ${!hasMakeup ? 'opacity-40 cursor-not-allowed' : ''} ${
+              saveConfirm ? 'bg-gold text-charcoal border-gold' : ''
+            }`}
+            title="Save Look"
           >
-            <FiRefreshCw className="w-5 h-5 text-gray-700" />
+            <FiHeart className={`w-5 h-5 ${saveConfirm ? 'fill-current' : ''}`} />
           </button>
-        )}
+
+          {/* Save confirmation tooltip */}
+          {saveConfirm && (
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-charcoal text-cream text-xs font-medium rounded-lg whitespace-nowrap animate-fade-in">
+              Saved
+            </div>
+          )}
+        </div>
+
+        {/* Divider */}
+        <div className="w-px h-6 bg-neutral-200 mx-1" />
+
+        {/* More options */}
+        <div className="relative">
+          <button
+            onClick={() => setShowMoreMenu(!showMoreMenu)}
+            className={`btn-icon ${showMoreMenu ? 'active' : ''}`}
+            title="More options"
+          >
+            <FiMoreHorizontal className="w-5 h-5" />
+          </button>
+
+          {/* More menu dropdown */}
+          {showMoreMenu && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowMoreMenu(false)}
+              />
+              <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-xl shadow-elevated border border-neutral-100 overflow-hidden z-50 animate-scale-in">
+                <button
+                  onClick={handleShare}
+                  disabled={!hasMakeup}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-charcoal hover:bg-neutral-50 transition-colors ${
+                    !hasMakeup ? 'opacity-40 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <FiShare2 className="w-4 h-4 text-muted" />
+                  Share Look
+                </button>
+                <button
+                  onClick={() => {
+                    handleCapture();
+                    setShowMoreMenu(false);
+                  }}
+                  disabled={!hasMakeup}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-charcoal hover:bg-neutral-50 transition-colors ${
+                    !hasMakeup ? 'opacity-40 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <FiDownload className="w-4 h-4 text-muted" />
+                  Download
+                </button>
+                <div className="border-t border-neutral-100" />
+                <button
+                  onClick={onShowAnalysis}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-charcoal hover:bg-neutral-50 transition-colors"
+                >
+                  <span className="w-4 h-4 flex items-center justify-center text-muted">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </span>
+                  Skin Analysis
+                </button>
+                {hasMakeup && (
+                  <>
+                    <div className="border-t border-neutral-100" />
+                    <button
+                      onClick={() => {
+                        clearAllProducts();
+                        setShowMoreMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-muted hover:bg-neutral-50 transition-colors"
+                    >
+                      <FiRefreshCw className="w-4 h-4" />
+                      Clear All
+                    </button>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Compare slider (when compare mode is active) */}
       {isCompareMode && (
-        <div className="p-3 bg-white/90 backdrop-blur-lg rounded-2xl shadow-lg">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600 w-16">Before</span>
+        <div className="p-4 bg-white rounded-2xl shadow-soft border border-neutral-100 animate-slide-up">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted font-medium w-14">Before</span>
             <input
               ref={compareSliderRef}
               type="range"
@@ -187,18 +238,10 @@ const Toolbar = ({ onShowFavorites, onShowAnalysis }) => {
               onChange={handleCompareSliderChange}
               className="flex-1"
             />
-            <span className="text-sm text-gray-600 w-16 text-right">After</span>
+            <span className="text-sm text-muted font-medium w-14 text-right">After</span>
           </div>
         </div>
       )}
-
-      {/* Quick skin analysis button */}
-      <button
-        onClick={onShowAnalysis}
-        className="w-full py-3 px-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
-      >
-        ✨ Analyze My Skin
-      </button>
     </div>
   );
 };

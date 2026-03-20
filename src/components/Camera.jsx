@@ -64,8 +64,8 @@ const Camera = () => {
         const dividerX = (comparePosition / 100) * width;
         ctx.moveTo(dividerX, 0);
         ctx.lineTo(dividerX, height);
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         // Clip makeup to right side only
@@ -171,14 +171,21 @@ const Camera = () => {
 
   if (error) {
     return (
-      <div className="relative w-full h-full flex items-center justify-center bg-gray-900 rounded-3xl">
-        <div className="text-center p-8">
-          <div className="text-6xl mb-4">📷</div>
-          <h3 className="text-white text-xl font-semibold mb-2">Camera Access Required</h3>
-          <p className="text-gray-400 mb-4">{error}</p>
+      <div className="relative w-full h-full flex items-center justify-center bg-charcoal rounded-2xl">
+        <div className="text-center p-8 max-w-sm">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-neutral-800 flex items-center justify-center">
+            <svg className="w-8 h-8 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 className="text-white text-lg font-serif font-medium mb-2">
+            Camera Access Required
+          </h3>
+          <p className="text-muted text-sm mb-6 leading-relaxed">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="btn-primary"
+            className="btn-luxury btn-gold"
           >
             Try Again
           </button>
@@ -188,11 +195,14 @@ const Camera = () => {
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden rounded-3xl bg-black">
+    <div className="relative w-full h-full overflow-hidden rounded-2xl bg-charcoal">
       {/* Video element (hidden but captures camera) */}
       <video
         ref={videoRef}
         className="absolute w-full h-full object-cover transform scale-x-[-1]"
+        style={{
+          filter: 'brightness(1.02) saturate(1.05) contrast(1.02)',
+        }}
         playsInline
         muted
       />
@@ -207,17 +217,25 @@ const Camera = () => {
       {/* Canvas for makeup rendering */}
       <canvas
         ref={makeupCanvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none"
+        className="absolute inset-0 w-full h-full pointer-events-none makeup-transition"
         style={{ transform: 'scaleX(-1)' }}
+      />
+
+      {/* Vignette overlay for luxury mirror effect */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.2) 100%)',
+        }}
       />
 
       {/* Loading overlay */}
       {isInitializing && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div className="absolute inset-0 flex items-center justify-center bg-charcoal/90 backdrop-blur-sm">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-white text-lg">Initializing camera...</p>
-            <p className="text-gray-400 text-sm mt-2">Please allow camera access when prompted</p>
+            <div className="spinner mx-auto mb-6" />
+            <p className="text-white text-base font-medium">Initializing</p>
+            <p className="text-muted text-sm mt-2">Please allow camera access</p>
           </div>
         </div>
       )}
@@ -225,14 +243,15 @@ const Camera = () => {
       {/* Face detection indicator */}
       {!isInitializing && isCameraActive && (
         <div className="absolute top-4 left-4">
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium
-            ${useStore.getState().isFaceDetected
-              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-            }`}
-          >
-            <span className={`w-2 h-2 rounded-full ${
-              useStore.getState().isFaceDetected ? 'bg-green-400' : 'bg-yellow-400 animate-pulse'
+          <div className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium backdrop-blur-md transition-all duration-300 ${
+            useStore.getState().isFaceDetected
+              ? 'bg-white/10 text-white/90 border border-white/20'
+              : 'bg-white/5 text-white/60 border border-white/10'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full transition-colors ${
+              useStore.getState().isFaceDetected
+                ? 'bg-gold'
+                : 'bg-white/40 animate-pulse'
             }`} />
             {useStore.getState().isFaceDetected ? 'Face Detected' : 'Position your face'}
           </div>
@@ -242,10 +261,10 @@ const Camera = () => {
       {/* Compare mode indicator */}
       {isCompareMode && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-          <div className="flex items-center gap-4 px-4 py-2 bg-black/60 backdrop-blur rounded-full text-white text-sm">
-            <span>Before</span>
-            <div className="w-px h-4 bg-white/50" />
-            <span>After</span>
+          <div className="flex items-center gap-4 px-5 py-2.5 bg-charcoal/70 backdrop-blur-md rounded-full border border-white/10">
+            <span className="text-white/70 text-xs font-medium tracking-wide">Before</span>
+            <div className="w-px h-3 bg-white/20" />
+            <span className="text-white/70 text-xs font-medium tracking-wide">After</span>
           </div>
         </div>
       )}

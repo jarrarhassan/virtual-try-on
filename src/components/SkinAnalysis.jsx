@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import useStore from '../store/useStore';
 import { performSkinAnalysis, generateSkinTips } from '../utils/skinAnalysis';
-import { FiCamera, FiUpload, FiRefreshCw, FiCheck, FiStar } from 'react-icons/fi';
+import { FiCamera, FiUpload, FiRefreshCw, FiCheck } from 'react-icons/fi';
 
 const SkinAnalysis = ({ onClose }) => {
   const { skinAnalysis, setSkinAnalysis, faceLandmarks, setSelectedProduct, setSelectedShade } = useStore();
@@ -9,13 +9,11 @@ const SkinAnalysis = ({ onClose }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const fileInputRef = useRef(null);
-  const canvasRef = useRef(null);
 
   // Capture from video
   const handleCapture = async () => {
     const video = document.querySelector('video');
     if (!video || !faceLandmarks) {
-      alert('Please ensure your face is visible in the camera');
       return;
     }
 
@@ -37,7 +35,7 @@ const SkinAnalysis = ({ onClose }) => {
       setSkinAnalysis(analysis);
       setCapturedImage(canvas.toDataURL());
       setIsAnalyzing(false);
-    }, 1500); // Simulated processing time
+    }, 1500);
   };
 
   // Upload image
@@ -95,36 +93,38 @@ const SkinAnalysis = ({ onClose }) => {
   const tips = skinAnalysis ? generateSkinTips(skinAnalysis) : [];
 
   return (
-    <div className="h-full flex flex-col bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
+    <div className="h-full flex flex-col bg-cream">
       {/* Header */}
-      <div className="p-4 border-b border-pink-100 bg-gradient-to-r from-pink-500 to-rose-500">
-        <h2 className="text-xl font-display font-semibold text-white">Skin Genius</h2>
-        <p className="text-pink-100 text-sm">AI-powered skin analysis</p>
+      <div className="p-5 border-b border-neutral-100 bg-white">
+        <h2 className="text-xl font-serif font-medium text-charcoal">Skin Analysis</h2>
+        <p className="text-muted text-sm mt-1">AI-powered insights</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scrollbar-luxury">
         {/* Capture section */}
         {!skinAnalysis && (
           <div className="p-6">
-            <div className="text-center mb-6">
-              <div className="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiCamera className="w-10 h-10 text-pink-500" />
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                <FiCamera className="w-8 h-8 text-muted" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Analyze Your Skin</h3>
-              <p className="text-gray-600 text-sm">
-                Get personalized product recommendations based on your skin type, tone, and concerns.
+              <h3 className="text-lg font-serif font-medium text-charcoal mb-2">
+                Analyze Your Skin
+              </h3>
+              <p className="text-muted text-sm leading-relaxed max-w-xs mx-auto">
+                Get personalized recommendations based on your skin type and tone.
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <button
                 onClick={handleCapture}
                 disabled={isAnalyzing || !faceLandmarks}
-                className="w-full btn-primary flex items-center justify-center gap-2"
+                className={`w-full btn-luxury ${isAnalyzing || !faceLandmarks ? 'bg-neutral-200 text-muted cursor-not-allowed' : 'btn-primary'}`}
               >
                 {isAnalyzing ? (
                   <>
-                    <FiRefreshCw className="w-5 h-5 animate-spin" />
+                    <div className="spinner w-5 h-5" />
                     Analyzing...
                   </>
                 ) : (
@@ -137,17 +137,17 @@ const SkinAnalysis = ({ onClose }) => {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200" />
+                  <div className="w-full border-t border-neutral-200" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-4 bg-white text-gray-500 text-sm">or</span>
+                  <span className="px-4 bg-cream text-muted text-xs tracking-wide">OR</span>
                 </div>
               </div>
 
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isAnalyzing}
-                className="w-full btn-secondary flex items-center justify-center gap-2"
+                className="w-full btn-luxury btn-secondary"
               >
                 <FiUpload className="w-5 h-5" />
                 Upload Photo
@@ -163,8 +163,8 @@ const SkinAnalysis = ({ onClose }) => {
             </div>
 
             {!faceLandmarks && (
-              <p className="text-center text-amber-600 text-sm mt-4 bg-amber-50 p-3 rounded-lg">
-                Please position your face in the camera for live capture
+              <p className="text-center text-muted text-sm mt-6 bg-neutral-100 p-4 rounded-xl">
+                Position your face in the camera for live capture
               </p>
             )}
           </div>
@@ -172,15 +172,15 @@ const SkinAnalysis = ({ onClose }) => {
 
         {/* Results section */}
         {skinAnalysis && (
-          <div className="p-4 space-y-4">
+          <div className="p-5 space-y-5">
             {/* Captured image */}
             {capturedImage && (
-              <div className="relative rounded-2xl overflow-hidden mb-4">
-                <img src={capturedImage} alt="Analyzed" className="w-full h-40 object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3">
-                  <p className="text-white font-medium">Analysis Complete</p>
-                  <p className="text-white/80 text-sm">
+              <div className="relative rounded-2xl overflow-hidden">
+                <img src={capturedImage} alt="Analyzed" className="w-full h-36 object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-white font-medium text-sm">Analysis Complete</p>
+                  <p className="text-white/70 text-xs">
                     {new Date(skinAnalysis.analyzedAt).toLocaleDateString()}
                   </p>
                 </div>
@@ -188,77 +188,46 @@ const SkinAnalysis = ({ onClose }) => {
             )}
 
             {/* Overall Score */}
-            <div className="analysis-card">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-semibold text-gray-800">Skin Health Score</h4>
+            <div className="bg-white rounded-xl p-5 border border-neutral-100">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-medium text-charcoal">Health Score</h4>
                 <div className="flex items-center gap-1">
-                  <FiStar className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                  <span className="text-2xl font-bold text-pink-600">{skinAnalysis.overallScore}</span>
-                  <span className="text-gray-500">/100</span>
+                  <span className="text-2xl font-serif font-medium text-gold">{skinAnalysis.overallScore}</span>
+                  <span className="text-muted text-sm">/100</span>
                 </div>
               </div>
-              <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-full h-1.5 bg-neutral-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full transition-all duration-500"
+                  className="h-full bg-gold rounded-full transition-all duration-500"
                   style={{ width: `${skinAnalysis.overallScore}%` }}
                 />
               </div>
             </div>
 
-            {/* Confidence Indicator */}
-            {skinAnalysis.confidence && (
-              <div className="analysis-card">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-gray-800">Analysis Confidence</h4>
-                  <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-                    skinAnalysis.confidence.overall >= 70 ? 'bg-green-100 text-green-700' :
-                    skinAnalysis.confidence.overall >= 50 ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
-                  }`}>
-                    {skinAnalysis.confidence.overall}%
-                  </span>
-                </div>
-                {skinAnalysis.lightingQuality?.guidance && (
-                  <p className="text-sm text-amber-600 bg-amber-50 p-2 rounded-lg">
-                    {skinAnalysis.lightingQuality.guidance}
-                  </p>
-                )}
-              </div>
-            )}
-
             {/* Skin Profile */}
-            <div className="analysis-card">
-              <h4 className="font-semibold text-gray-800 mb-3">Your Skin Profile</h4>
+            <div className="bg-white rounded-xl p-5 border border-neutral-100">
+              <h4 className="font-medium text-charcoal mb-4">Your Profile</h4>
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white p-3 rounded-xl">
-                  <p className="text-xs text-gray-500 mb-1">Skin Type</p>
-                  <p className="font-medium text-gray-800">
+                <div className="bg-cream p-3 rounded-lg">
+                  <p className="text-xs text-muted mb-1 tracking-wide uppercase">Skin Type</p>
+                  <p className="font-medium text-charcoal text-sm">
                     {skinAnalysis.skinType?.type || skinAnalysis.skinType}
                   </p>
-                  {skinAnalysis.skinType?.confidence && (
-                    <p className="text-xs text-gray-400">{skinAnalysis.skinType.confidence}% confident</p>
-                  )}
                 </div>
-                <div className="bg-white p-3 rounded-xl">
-                  <p className="text-xs text-gray-500 mb-1">Undertone</p>
-                  <p className="font-medium text-gray-800 capitalize">
+                <div className="bg-cream p-3 rounded-lg">
+                  <p className="text-xs text-muted mb-1 tracking-wide uppercase">Undertone</p>
+                  <p className="font-medium text-charcoal text-sm capitalize">
                     {skinAnalysis.undertone?.type || skinAnalysis.undertone}
                   </p>
-                  {skinAnalysis.undertone?.confidence && (
-                    <p className="text-xs text-gray-400">{skinAnalysis.undertone.confidence}% confident</p>
-                  )}
                 </div>
-                <div className="bg-white p-3 rounded-xl">
-                  <p className="text-xs text-gray-500 mb-1">Skin Tone</p>
-                  <p className="font-medium text-gray-800">{skinAnalysis.fitzpatrick.name}</p>
-                  {skinAnalysis.fitzpatrick?.confidence && (
-                    <p className="text-xs text-gray-400">{skinAnalysis.fitzpatrick.confidence}% confident</p>
-                  )}
+                <div className="bg-cream p-3 rounded-lg">
+                  <p className="text-xs text-muted mb-1 tracking-wide uppercase">Tone</p>
+                  <p className="font-medium text-charcoal text-sm">{skinAnalysis.fitzpatrick.name}</p>
                 </div>
-                <div className="bg-white p-3 rounded-xl">
-                  <p className="text-xs text-gray-500 mb-1">Color Match</p>
+                <div className="bg-cream p-3 rounded-lg">
+                  <p className="text-xs text-muted mb-1 tracking-wide uppercase">Match</p>
                   <div
-                    className="w-8 h-8 rounded-full border-2 border-white shadow"
+                    className="w-7 h-7 rounded-full shadow-soft"
                     style={{
                       backgroundColor: `rgb(${skinAnalysis.skinColor?.r || 200}, ${skinAnalysis.skinColor?.g || 180}, ${skinAnalysis.skinColor?.b || 160})`
                     }}
@@ -269,16 +238,16 @@ const SkinAnalysis = ({ onClose }) => {
 
             {/* Concerns */}
             {skinAnalysis.concerns.length > 0 && (
-              <div className="analysis-card">
-                <h4 className="font-semibold text-gray-800 mb-3">Areas of Focus</h4>
+              <div className="bg-white rounded-xl p-5 border border-neutral-100">
+                <h4 className="font-medium text-charcoal mb-4">Focus Areas</h4>
                 <div className="space-y-2">
                   {skinAnalysis.concerns.map((concern, i) => (
-                    <div key={i} className="flex items-center justify-between bg-white p-3 rounded-xl">
-                      <span className="text-gray-700">{concern.name}</span>
-                      <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-                        concern.severity === 'mild' ? 'bg-green-100 text-green-700' :
-                        concern.severity === 'moderate' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
+                    <div key={i} className="flex items-center justify-between bg-cream p-3 rounded-lg">
+                      <span className="text-charcoal text-sm">{concern.name}</span>
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        concern.severity === 'mild' ? 'bg-neutral-100 text-muted' :
+                        concern.severity === 'moderate' ? 'bg-gold/10 text-gold-dark' :
+                        'bg-charcoal/10 text-charcoal'
                       }`}>
                         {concern.severity}
                       </span>
@@ -290,41 +259,40 @@ const SkinAnalysis = ({ onClose }) => {
 
             {/* Tips */}
             {tips.length > 0 && (
-              <div className="analysis-card">
-                <h4 className="font-semibold text-gray-800 mb-3">Beauty Tips</h4>
-                <ul className="space-y-2">
+              <div className="bg-white rounded-xl p-5 border border-neutral-100">
+                <h4 className="font-medium text-charcoal mb-4">Recommendations</h4>
+                <ul className="space-y-3">
                   {tips.map((tip, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                      <FiCheck className="w-4 h-4 text-pink-500 flex-shrink-0 mt-0.5" />
-                      {tip}
+                    <li key={i} className="flex items-start gap-3 text-sm text-muted">
+                      <FiCheck className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" />
+                      <span>{tip}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             )}
 
-            {/* Recommendations */}
+            {/* Product Recommendations */}
             {skinAnalysis.recommendations.length > 0 && (
-              <div className="analysis-card">
-                <h4 className="font-semibold text-gray-800 mb-3">Recommended Products</h4>
+              <div className="bg-white rounded-xl p-5 border border-neutral-100">
+                <h4 className="font-medium text-charcoal mb-4">Suggested Products</h4>
                 <div className="space-y-3">
                   {skinAnalysis.recommendations.slice(0, 4).map((rec, i) => (
                     <div
                       key={i}
-                      className="bg-white p-3 rounded-xl flex items-center gap-3"
+                      className="bg-cream p-4 rounded-xl flex items-center gap-4"
                     >
                       <div
-                        className="w-12 h-12 rounded-lg flex-shrink-0"
+                        className="w-12 h-12 rounded-lg flex-shrink-0 shadow-soft"
                         style={{ backgroundColor: rec.recommendedShade?.hex || '#f0f0f0' }}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-800 text-sm truncate">{rec.product.name}</p>
-                        <p className="text-xs text-gray-500">{rec.recommendedShade?.name}</p>
-                        <p className="text-xs text-pink-600">{rec.reason}</p>
+                        <p className="font-medium text-charcoal text-sm truncate">{rec.product.name}</p>
+                        <p className="text-xs text-muted">{rec.recommendedShade?.name}</p>
                       </div>
                       <button
                         onClick={() => handleApplyRecommendation(rec)}
-                        className="px-3 py-1.5 bg-pink-500 text-white text-sm rounded-full hover:bg-pink-600 transition-colors"
+                        className="px-4 py-2 bg-charcoal text-cream text-xs font-medium rounded-full hover:bg-neutral-800 transition-colors"
                       >
                         Try
                       </button>
@@ -334,22 +302,15 @@ const SkinAnalysis = ({ onClose }) => {
               </div>
             )}
 
-            {/* Disclaimer */}
-            {skinAnalysis.disclaimer && (
-              <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
-                {skinAnalysis.disclaimer}
-              </div>
-            )}
-
             {/* Reanalyze button */}
             <button
               onClick={() => {
                 setSkinAnalysis(null);
                 setCapturedImage(null);
               }}
-              className="w-full btn-secondary flex items-center justify-center gap-2"
+              className="w-full btn-luxury btn-secondary"
             >
-              <FiRefreshCw className="w-5 h-5" />
+              <FiRefreshCw className="w-4 h-4" />
               Analyze Again
             </button>
           </div>

@@ -373,11 +373,11 @@ export const products = [
 
 // Product categories for filtering
 export const categories = [
-  { id: 'all', name: 'All', icon: '✨' },
-  { id: 'lips', name: 'Lips', icon: '💋' },
-  { id: 'face', name: 'Face', icon: '🌸' },
-  { id: 'eyes', name: 'Eyes', icon: '👁️' },
-  { id: 'brows', name: 'Brows', icon: '🖌️' },
+  { id: 'all', name: 'All' },
+  { id: 'lips', name: 'Lips' },
+  { id: 'face', name: 'Face' },
+  { id: 'eyes', name: 'Eyes' },
+  { id: 'brows', name: 'Brows' },
 ];
 
 // Product types for sub-filtering
